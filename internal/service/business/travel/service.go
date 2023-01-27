@@ -123,30 +123,35 @@ func (s *DummyTravelService) Remove(travelId int64) (bool, error) {
 func getDummyData() []*business.Travel {
 	return []*business.Travel{
 		{
+			TravelId:  0,
 			Title:     "Travel in Turkey",
 			Where:     "Istanbul",
 			StartDate: time.Date(2022, 9, 7, 0, 0, 0, 0, time.Local),
 			Duration:  14,
 		},
 		{
+			TravelId:  1,
 			Title:     "Travel in Germany",
 			Where:     "Berlin",
 			StartDate: time.Date(2022, 12, 7, 0, 0, 0, 0, time.Local),
 			Duration:  10,
 		},
 		{
+			TravelId:  2,
 			Title:     "Travel in Turkey",
 			Where:     "Antalya",
 			StartDate: time.Date(2023, 1, 3, 0, 0, 0, 0, time.Local),
 			Duration:  4,
 		},
 		{
+			TravelId:  3,
 			Title:     "Travel in Georgia",
 			Where:     "Tbilisi",
 			StartDate: time.Date(2023, 2, 14, 0, 0, 0, 0, time.Local),
 			Duration:  10,
 		},
 		{
+			TravelId:  4,
 			Title:     "Travel in Canada",
 			Where:     "Toronto",
 			StartDate: time.Date(2023, 3, 7, 0, 0, 0, 0, time.Local),

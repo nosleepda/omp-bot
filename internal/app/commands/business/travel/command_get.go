@@ -24,7 +24,7 @@ func (c *BusinessTravelCommander) Get(inputMessage *tgbotapi.Message) {
 
 	msg := tgbotapi.NewMessage(
 		inputMessage.Chat.ID,
-		product.Title,
+		product.String(),
 	)
 
 	_, err = c.bot.Send(msg)

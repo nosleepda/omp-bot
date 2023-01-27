@@ -50,6 +50,12 @@ func (c *BusinessTravelCommander) HandleCommand(msg *tgbotapi.Message, commandPa
 		c.List(msg, CallbackListData{Cursor: 0, Limit: 3})
 	case "get":
 		c.Get(msg)
+	case "new":
+		c.New(msg)
+	case "edit":
+		c.Edit(msg)
+	case "delete":
+		c.Delete(msg)
 	default:
 		c.Default(msg)
 	}

@@ -1,41 +1,39 @@
 package travel
 
 import (
-	"encoding/json"
-	"log"
-
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
+	"log"
+	"strconv"
 )
 
 func (c *BusinessTravelCommander) Delete(inputMessage *tgbotapi.Message) {
-	outputMsgText := "Here all the products: \n\n"
+	args := inputMessage.CommandArguments()
 
-	products, err := c.travelService.List(int64(0), int64(0))
-	for _, p := range products {
-		outputMsgText += p.String()
-		outputMsgText += "\n"
+	idx, err := strconv.Atoi(args)
+	if err != nil {
+		log.Println("wrong args", args)
+		return
+	}
+
+	ok, err := c.travelService.Remove(int64(idx))
+
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	var outputMsgText string
+	if ok {
+		outputMsgText = fmt.Sprintf("Travel %d deleted", idx)
+	} else {
+		outputMsgText = fmt.Sprintf("Travel %d not deleted", idx)
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 
-	serializedData, _ := json.Marshal(CallbackListData{Cursor: 0, Limit: 3})
-
-	callbackPath := path.CallbackPath{
-		Domain:       "business",
-		Subdomain:    "travel",
-		CallbackName: "list",
-		CallbackData: string(serializedData),
-	}
-
-	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPath.String()),
-		),
-	)
-
 	_, err = c.bot.Send(msg)
 	if err != nil {
-		log.Printf("BusinessTravelCommander.List: error sending reply message to chat - %v", err)
+		log.Printf("BusinessTravelCommander.Delete: error sending reply message to chat - %v", err)
 	}
 }

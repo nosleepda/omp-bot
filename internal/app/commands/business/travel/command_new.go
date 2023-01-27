@@ -1,41 +1,33 @@
 package travel
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/ozonmp/omp-bot/internal/model/business"
 	"log"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
 func (c *BusinessTravelCommander) New(inputMessage *tgbotapi.Message) {
-	outputMsgText := "Here all the products: \n\n"
 
-	products, err := c.travelService.List(int64(0), int64(0))
-	for _, p := range products {
-		outputMsgText += p.String()
-		outputMsgText += "\n"
+	product, err := c.travelService.Create(business.Travel{
+		Title:     "new",
+		Where:     "new",
+		StartDate: time.Now(),
+		Duration:  10,
+	})
+	if err != nil {
+		log.Print(err)
+		return
 	}
+
+	outputMsgText := fmt.Sprintf("Travel created:\n\n%v", product)
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 
-	serializedData, _ := json.Marshal(CallbackListData{Cursor: 0, Limit: 3})
-
-	callbackPath := path.CallbackPath{
-		Domain:       "business",
-		Subdomain:    "travel",
-		CallbackName: "list",
-		CallbackData: string(serializedData),
-	}
-
-	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPath.String()),
-		),
-	)
-
 	_, err = c.bot.Send(msg)
 	if err != nil {
-		log.Printf("BusinessTravelCommander.List: error sending reply message to chat - %v", err)
+		log.Printf("BusinessTravelCommander.New: error creating new travel - %v", err)
 	}
 }

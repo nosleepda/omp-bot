@@ -1,38 +1,38 @@
 package travel
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/ozonmp/omp-bot/internal/model/business"
 	"log"
+	"strconv"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
 func (c *BusinessTravelCommander) Edit(inputMessage *tgbotapi.Message) {
-	outputMsgText := "Here all the products: \n\n"
+	args := inputMessage.CommandArguments()
 
-	products, err := c.travelService.List(int64(0), int64(0))
-	for _, p := range products {
-		outputMsgText += p.String()
-		outputMsgText += "\n"
+	idx, err := strconv.Atoi(args)
+	if err != nil {
+		log.Println("wrong args", args)
+		return
 	}
 
+	err = c.travelService.Update(int64(idx), business.Travel{
+		Title:     "new2",
+		Where:     "new2",
+		StartDate: time.Now(),
+		Duration:  10,
+	})
+
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	outputMsgText := fmt.Sprintf("Travel %d updated", idx)
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
-
-	serializedData, _ := json.Marshal(CallbackListData{Cursor: 0, Limit: 3})
-
-	callbackPath := path.CallbackPath{
-		Domain:       "business",
-		Subdomain:    "travel",
-		CallbackName: "list",
-		CallbackData: string(serializedData),
-	}
-
-	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPath.String()),
-		),
-	)
 
 	_, err = c.bot.Send(msg)
 	if err != nil {
