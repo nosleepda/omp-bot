@@ -2,27 +2,31 @@ package travel
 
 import (
 	"fmt"
-	"github.com/ozonmp/omp-bot/internal/model/business"
-	"log"
-	"time"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
+	"strings"
 )
 
 func (c *BusinessTravelCommander) New(inputMessage *tgbotapi.Message) {
 
-	product, err := c.travelService.Create(business.Travel{
-		Title:     "new",
-		Where:     "new",
-		StartDate: time.Now(),
-		Duration:  10,
-	})
+	args := inputMessage.CommandArguments()
+
+	fields := strings.Split(args, ";")
+
+	if len(fields) != 4 {
+		log.Println("wrong args", args)
+		return
+	}
+
+	mappedTravel, err := mapTravel(fields)
+
+	createdTravel, err := c.travelService.Create(mappedTravel)
 	if err != nil {
 		log.Print(err)
 		return
 	}
 
-	outputMsgText := fmt.Sprintf("Travel created:\n\n%v", product)
+	outputMsgText := fmt.Sprintf("Travel created:\n\n%v", createdTravel)
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 

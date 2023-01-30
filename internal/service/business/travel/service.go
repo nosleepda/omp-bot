@@ -12,8 +12,8 @@ type TravelService interface {
 	Describe(travelId int64) (*business.Travel, error)
 	List(cursor int64, limit int64) ([]*business.Travel, error)
 	Count() (int64, error)
-	Create(business.Travel) (*business.Travel, error)
-	Update(travelId int64, travel business.Travel) error
+	Create(*business.Travel) (*business.Travel, error)
+	Update(travelId int64, travel *business.Travel) error
 	Remove(travelId int64) (bool, error)
 }
 
@@ -70,7 +70,7 @@ func (s *DummyTravelService) List(cursor int64, limit int64) ([]*business.Travel
 	return s.Data[cursor : cursor+limit], nil
 }
 
-func (s *DummyTravelService) Create(travel business.Travel) (*business.Travel, error) {
+func (s *DummyTravelService) Create(travel *business.Travel) (*business.Travel, error) {
 
 	ids := lo.Map(s.Data, func(travel *business.Travel, index int) int64 {
 		return travel.TravelId
@@ -80,12 +80,12 @@ func (s *DummyTravelService) Create(travel business.Travel) (*business.Travel, e
 
 	travel.TravelId = maxId + 1
 
-	s.Data = append(s.Data, &travel)
+	s.Data = append(s.Data, travel)
 
-	return &travel, nil
+	return travel, nil
 }
 
-func (s *DummyTravelService) Update(travelId int64, travelUpsert business.Travel) error {
+func (s *DummyTravelService) Update(travelId int64, travelUpsert *business.Travel) error {
 	travels := lo.Filter(s.Data, func(travel *business.Travel, index int) bool {
 		return travel.TravelId == travelId
 	})

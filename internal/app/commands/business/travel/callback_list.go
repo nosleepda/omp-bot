@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/ozonmp/omp-bot/internal/app/path"
@@ -33,9 +34,8 @@ func (c *BusinessTravelCommander) CallbackList(callback *tgbotapi.CallbackQuery,
 	}
 
 	outputMsgText := "Here all the products: \n\n"
-	for _, p := range travels {
-		outputMsgText += p.String()
-		outputMsgText += "\n"
+	for idx, p := range travels {
+		outputMsgText += fmt.Sprintf("%s\n%s\n", strconv.Itoa(idx), p.String())
 	}
 	currentCount := callbackData.Cursor + int64(len(travels))
 

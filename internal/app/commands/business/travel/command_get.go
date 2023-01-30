@@ -10,15 +10,22 @@ import (
 func (c *BusinessTravelCommander) Get(inputMessage *tgbotapi.Message) {
 	args := inputMessage.CommandArguments()
 
-	idx, err := strconv.Atoi(args)
-	if err != nil {
-		log.Println("wrong args", args)
-		return
+	var idx int
+	var err error
+
+	if len(args) == 0 {
+		idx = 0
+	} else {
+		idx, err = strconv.Atoi(args)
+		if err != nil {
+			log.Println("wrong args", args)
+			return
+		}
 	}
 
 	product, err := c.travelService.Describe(int64(idx))
 	if err != nil {
-		log.Printf("fail to get product with idx %d: %v", idx, err)
+		log.Printf("fail to get travel with idx %d: %v", idx, err)
 		return
 	}
 
